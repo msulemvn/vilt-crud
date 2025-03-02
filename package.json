@@ -1,0 +1,51 @@
+{
+  "name": "vilt-crud",
+  "version": "1.0.0",
+  "description": "A simple crud application in VILT",
+  "main": "postcss.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "dev": "vite",
+    "pretty": "prettier --write ./**/*.{js,jsx,mjs,cjs,ts,tsx,json}"
+  },
+  "devDependencies": {
+    "@inertiajs/vue3": "^1.0.0",
+    "@tailwindcss/forms": "^0.5.3",
+    "@types/node": "^22.13.8",
+    "@vitejs/plugin-vue": "^5.0.0",
+    "@vue/server-renderer": "^3.4.0",
+    "autoprefixer": "^10.4.20",
+    "axios": "^1.8.1",
+    "laravel-vite-plugin": "^1.0.0",
+    "postcss": "^8.4.31",
+    "prettier": "^3.5.2",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.0.2",
+    "vite": "^5.0.0",
+    "vue": "^3.4.0",
+    "vue-tsc": "^1.8.27"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/vue-fontawesome": "^3.0.8",
+    "@vee-validate/zod": "^4.15.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lodash": "^4.17.21",
+    "lucide-vue-next": "^0.477.0",
+    "reka-ui": "^2.0.2",
+    "tailwind-merge": "^3.0.2",
+    "tailwindcss-animate": "^1.0.7",
+    "vee-validate": "^4.15.0",
+    "vue-axios": "^3.5.2",
+    "zod": "^3.24.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
