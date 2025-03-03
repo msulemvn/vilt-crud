@@ -5,7 +5,7 @@ import { Button } from "@/Components/ui/button";
 
 const props = defineProps({
     users: {
-        type: Array,
+        type: Object,
         required: true,
     },
     actions: {

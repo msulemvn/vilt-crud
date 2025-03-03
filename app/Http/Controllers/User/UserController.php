@@ -9,10 +9,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Resources\UserResource;
-use Symfony\Component\HttpFoundation\Response as myResponse;
+use Symfony\Component\HttpFoundation\Response as symfonyResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
+use App\Http\Requests\User\StoreUserRequest;
 
 class UserController extends Controller
 {
@@ -34,16 +35,16 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
         try {
 
-            $userData = ["name" => $request->name, "email" => $request->email, "password" => Hash::make("password")];
+            $userData = ["name" => $request->name, "email" => $request->email, "password" => Hash::make($request->password)];
             $user = User::create($userData);
 
-            return response()->json(["status" => myResponse::$statusTexts[myResponse::HTTP_CREATED], "message" => "User created successfully", "data" => new UserResource($user)], myResponse::HTTP_CREATED);
+            return apiResponse(message: "User created successfully", data: new UserResource($user), statusCode: symfonyResponse::HTTP_CREATED);
         } catch (QueryException $e) {
-            return response()->json(["status" => myResponse::$statusTexts[myResponse::HTTP_BAD_REQUEST], "message" => "Integrity constraint violation"], myResponse::HTTP_BAD_REQUEST);
+            return apiResponse(errors: ["Integrity constraint violation"], statusCode: symfonyResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -75,11 +76,11 @@ class UserController extends Controller
             $userData = ["name" => $request->name, "email" => $request->email];
             $user->update($userData);
 
-            return response()->json(["status" => myResponse::$statusTexts[myResponse::HTTP_OK], "message" => "User updated successfully", "data" => new UserResource($user)]);
+            return apiResponse(message: "User updated successfully", data: new UserResource($user));
         } catch (ModelNotFoundException $e) {
-            return response()->json(["status" => myResponse::$statusTexts[myResponse::HTTP_NOT_FOUND], "message" => "No query results for model"], myResponse::HTTP_NOT_FOUND);
+            return apiResponse(errors: ["No query results for model"], statusCode: symfonyResponse::HTTP_NOT_FOUND);
         } catch (QueryException $e) {
-            return response()->json(["status" => myResponse::$statusTexts[myResponse::HTTP_BAD_REQUEST], "message" => "Integrity constraint violation"], myResponse::HTTP_BAD_REQUEST);
+            return apiResponse(errors: ["Integrity constraint violation"], statusCode: symfonyResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -95,9 +96,9 @@ class UserController extends Controller
             $user = User::find($id);
             $user->delete();
 
-            return response()->json(["status" => myResponse::$statusTexts[myResponse::HTTP_NO_CONTENT], "message" => "User deleted successfully"], myResponse::HTTP_NO_CONTENT);
+            return apiResponse(message: "User deleted successfully", statusCode: symfonyResponse::HTTP_NO_CONTENT);
         } catch (ModelNotFoundException $e) {
-            return response()->json(["status" => myResponse::$statusTexts[myResponse::HTTP_NOT_FOUND], "message" => "No query results for model"], myResponse::HTTP_NOT_FOUND);
+            return apiResponse(data: ["No query results for model"], statusCode: symfonyResponse::HTTP_NOT_FOUND);
         }
     }
 }

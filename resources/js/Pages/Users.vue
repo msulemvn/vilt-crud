@@ -11,7 +11,7 @@ let isDialogOpen = ref(false);
 
 const props = defineProps({
     users: {
-        type: Array,
+        type: Object,
     },
 });
 

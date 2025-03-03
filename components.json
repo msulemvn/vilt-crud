@@ -5,15 +5,15 @@
   "tailwind": {
     "config": "tailwind.config.js",
     "css": "resources/css/app.css",
-    "baseColor": "neutral",
+    "baseColor": "zinc",
     "cssVariables": true,
     "prefix": ""
   },
   "aliases": {
-    "components": "@/Components",
-    "composables": "@/Composables",
+    "components": "@/components",
+    "composables": "@/composables",
     "utils": "@/lib/utils",
-    "ui": "@/Components/ui",
+    "ui": "@/components/ui",
     "lib": "@/lib"
   },
   "iconLibrary": "lucide"

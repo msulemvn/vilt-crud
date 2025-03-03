@@ -83,6 +83,16 @@ const onSubmitForm = () => {
                         <Input id="email" name="email" :default-value="user.email" v-model:model-value="user.email"
                             class="col-span-3" />
                     </div>
+                    <div class="grid grid-cols-4 items-center gap-4" v-if="props.operation == 'Create'">
+                        <Label for="password" class="text-right"> Password </Label>
+                        <Input id="password" type="password" name="password" v-model:model-value="user.password"
+                            class="col-span-3" />
+                    </div>
+                    <div class="grid grid-cols-4 items-center gap-4" v-if="props.operation == 'Create'">
+                        <Label for="password_confirmation" class="text-right"> Confirm Password </Label>
+                        <Input id="password_confirmation" type="password" name="password_confirmation"
+                            v-model:model-value="user.password_confirmation" class="col-span-3" />
+                    </div>
                 </div>
                 <DialogFooter>
                     <Button type="submit"> Save changes </Button>
