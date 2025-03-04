@@ -5,6 +5,10 @@ import { Button } from "@/Components/ui/button";
 import MyTable from "@/Components/MyTable.vue";
 import { ref } from "vue";
 import MyDialog from "@/Components/MyDialog.vue";
+import { useToast } from '@/Components/ui/toast/use-toast';
+import { Toaster } from '@/Components/ui/toast';
+
+const { toast } = useToast()
 
 let operation = ref("Create");
 let isDialogOpen = ref(false);
@@ -39,8 +43,26 @@ const deleteRecord = (data) => {
     }).then(function (response) {
         if (response.status === 204) {
             users.value = users.value.filter((user) => user.id !== data.id);
+            toast({
+                description: "User deleted successfully",
+                variant: "destructive"
+            });
         }
-    });
+    }).catch((error) => {
+        const myErrors = error.response.data.errors;
+        const errorKey = Object.keys(myErrors)[0];
+        const errors = myErrors[errorKey];
+
+        if (errors) {
+            Object.entries(errors).forEach(([key, messages]) => {
+                toast({
+                    title: key,
+                    description: messages[0]
+                });
+            });
+        }
+        console.error("Errors:", JSON.stringify(myErrors));
+    })
 };
 
 const handleEditClick = (data) => {
@@ -59,15 +81,16 @@ const handleCreateClick = () => {
 <template>
 
     <Head title="Users" />
-    <MyDialog v-if="isDialogOpen" :operation="operation" :isDialogOpen="isDialogOpen" @onCreate="createRecord"
-        @onEdit="editRecord" @onDialogClose="setDialog" :user="user">
-    </MyDialog>
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 Users
             </h2>
         </template>
+        <MyDialog v-if="isDialogOpen" :operation="operation" :isDialogOpen="isDialogOpen" @onCreate="createRecord"
+            @onEdit="editRecord" @onDialogClose="setDialog" :user="user">
+        </MyDialog>
+        <Toaster />
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <h3 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-4">

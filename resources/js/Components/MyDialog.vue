@@ -21,7 +21,10 @@ import {
     FormLabel,
     FormMessage,
 } from '@/Components/ui/form';
-import { User } from "lucide-vue-next";
+
+import { useToast } from '@/Components/ui/toast/use-toast';
+
+const { toast } = useToast()
 
 const formSchema = toTypedSchema(z.object({
     name: z.string().min(2).max(50),
@@ -55,24 +58,39 @@ watch(() => props.user, (newUser) => {
 });
 
 const onSubmit = form.handleSubmit(async (values) => {
-    try {
-        const response = await axios({
-            method: props.operation === "Create" ? "post" : "put",
-            data: values,
-            url: `/users${props.operation === "Create" ? "" : "/" + user.value.id}`,
-            responseType: "json",
-        });
+    axios({
+        method: props.operation === "Create" ? "post" : "put",
+        data: values,
+        url: `/users${props.operation === "Create" ? "" : "/" + user.value.id}`,
+        responseType: "json",
+    })
+        .then((response) => {
+            if (response.status === 201) {
+                emit("onCreate", response.data.data);
+            } else {
+                emit("onEdit", response.data.data);
+            }
+            isDialogOpen.value = false;
+            form.resetForm();
 
-        if (response.status === 201) {
-            emit("onCreate", response.data.data);
-        } else {
-            emit("onEdit", response.data.data);
-        }
-        isDialogOpen.value = false;
-        form.resetForm();
-    } catch (error) {
-        console.error("Error submitting form:", error);
-    }
+            toast({
+                description: response.data.message,
+            });
+        })
+        .catch((error) => {
+            const myErrors = error.response.data.errors;
+            const errorKey = Object.keys(myErrors)[0];
+            const errors = myErrors[errorKey];
+
+            if (errors) {
+                Object.entries(errors).forEach(([key, messages]) => {
+                    toast({
+                        title: key,
+                        description: messages[0]
+                    });
+                });
+            }
+        })
 });
 </script>
 
@@ -83,11 +101,12 @@ const onSubmit = form.handleSubmit(async (values) => {
                 <DialogHeader>
                     <DialogTitle>{{ props.operation }}</DialogTitle>
                     <DialogDescription>
-                        Make changes to your profile here. Click save when you're done.
+                        {{ operation === 'Create' ? "Please enter the details below to add a new user." :
+                            "Make changes to a user here." }}
                     </DialogDescription>
                 </DialogHeader>
                 <div class="grid gap-4 py-4">
-                    <FormField v-slot="{ componentField }" name="name">
+                    <FormField v-slot="{ componentField }" name="name" :validateOnBlur="false">
                         <FormItem>
                             <FormLabel>Name</FormLabel>
                             <FormControl>
@@ -97,7 +116,7 @@ const onSubmit = form.handleSubmit(async (values) => {
                         </FormItem>
                     </FormField>
 
-                    <FormField v-slot="{ componentField }" name="email">
+                    <FormField v-slot="{ componentField }" name="email" :validateOnBlur="false">
                         <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
@@ -107,7 +126,8 @@ const onSubmit = form.handleSubmit(async (values) => {
                         </FormItem>
                     </FormField>
 
-                    <FormField v-if="operation === 'Create'" v-slot="{ componentField }" name="password">
+                    <FormField v-if="operation === 'Create'" v-slot="{ componentField }" name="password"
+                        :validateOnBlur="false">
                         <FormItem>
                             <FormLabel>Password</FormLabel>
                             <FormControl>
@@ -117,7 +137,8 @@ const onSubmit = form.handleSubmit(async (values) => {
                         </FormItem>
                     </FormField>
 
-                    <FormField v-if="operation === 'Create'" v-slot="{ componentField }" name="password_confirmation">
+                    <FormField v-if="operation === 'Create'" v-slot="{ componentField }" name="password_confirmation"
+                        :validateOnBlur="false">
                         <FormItem>
                             <FormLabel>Confirm Password</FormLabel>
                             <FormControl>
