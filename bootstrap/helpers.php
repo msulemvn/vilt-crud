@@ -6,11 +6,12 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use App\Models\ErrorLog;
 use App\Models\ActivityLog;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 if (!function_exists('apiResponse')) {
     function apiResponse(
         ?string $message = null,
-        $data = [],
+        array|JsonResource $data = [],
         array $errors = [],
         int $statusCode = SymfonyResponse::HTTP_OK,
         ?Request $request = null,
@@ -41,11 +42,11 @@ if (!function_exists('apiResponse')) {
             $result['message'] = $message;
         }
 
-        if (!empty($data) && is_array(reset($data))) {
+        if (!empty($data)) {
             $result['data'] = $data;
         }
 
-        if (!empty($errors) && is_array(reset($errors))) {
+        if (!empty($errors)) {
             $result['errors'] = ['validation' => $errors];
         }
 
