@@ -10,9 +10,7 @@ import MyPagination from "@/Components/MyPagination.vue";
 import {
     Card,
     CardContent,
-    CardDescription,
     CardFooter,
-    CardHeader,
     CardTitle,
 } from '@/Components/ui/card'
 
@@ -50,7 +48,7 @@ const deleteRecord = (data) => {
         responseType: "json",
     }).then(function (response) {
         if (response.status === 204) {
-            users.value.data = users.value.data.filter((user) => user.id !== data.id);
+            Object.assign(users.value.data, users.value.data.filter((user) => user.id !== data.id));
             toast({
                 description: "User deleted successfully",
                 variant: "destructive"
