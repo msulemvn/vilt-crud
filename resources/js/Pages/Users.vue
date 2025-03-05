@@ -6,6 +6,15 @@ import MyTable from "@/Components/MyTable.vue";
 import { ref } from "vue";
 import MyDialog from "@/Components/MyDialog.vue";
 import { useToast } from '@/Components/ui/toast/use-toast';
+import MyPagination from "@/Components/MyPagination.vue";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/Components/ui/card'
 
 const { toast } = useToast()
 
@@ -18,7 +27,7 @@ const props = defineProps({
     },
 });
 
-const users = ref(props.users.data);
+const users = ref(props.users);
 const user = ref({});
 
 function setDialog() {
@@ -26,11 +35,11 @@ function setDialog() {
 }
 
 function createRecord(data) {
-    users.value.unshift(data);
+    users.value.data.unshift(data);
 }
 
 function editRecord(data) {
-    let user = users.value.find((user) => user.id === data.id);
+    let user = users.value.data.find((user) => user.id === data.id);
     Object.assign(user, data);
 }
 
@@ -41,7 +50,7 @@ const deleteRecord = (data) => {
         responseType: "json",
     }).then(function (response) {
         if (response.status === 204) {
-            users.value = users.value.filter((user) => user.id !== data.id);
+            users.value.data = users.value.data.filter((user) => user.id !== data.id);
             toast({
                 description: "User deleted successfully",
                 variant: "destructive"
@@ -94,12 +103,21 @@ const handleCreateClick = () => {
                 <h3 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-4">
                     Users
                 </h3>
-                <div class="dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
-                    <Button class="float-right" @click="handleCreateClick" variant="outline">
-                        <font-awesome-icon icon="user" class="pr-2" /> Add User
-                    </Button>
-                </div>
-                <MyTable :users="users" :actions="[handleEditClick, deleteRecord]" />
+                <Card class="shadow-lg rounded-lg">
+                    <CardTitle>
+                        <div class="flex justify-end m-4">
+                            <Button @click="handleCreateClick" variant="ghost">
+                                <font-awesome-icon icon="user" class="pr-2" /> Add User
+                            </Button>
+                        </div>
+                    </CardTitle>
+                    <CardContent class="max-h-[60vh]">
+                        <MyTable :data="users.data" :actions="[handleEditClick, deleteRecord]" />
+                    </CardContent>
+                    <CardFooter class="flex justify-center p-4">
+                        <MyPagination :meta="users.meta"></MyPagination>
+                    </CardFooter>
+                </Card>
             </div>
         </div>
     </AuthenticatedLayout>
