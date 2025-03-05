@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Bio\BioController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\User\UserController;
@@ -23,8 +22,6 @@ Route::get('/', [WelcomeController::class, 'index']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['verified'])->name('dashboard');
-
-    Route::get('/bio', [BioController::class, 'index'])->name("bio");
 
     Route::get('/users', [UserController::class, 'index'])->name('users');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
