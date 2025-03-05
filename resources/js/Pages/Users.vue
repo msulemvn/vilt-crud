@@ -6,7 +6,7 @@ import MyTable from "@/Components/MyTable.vue";
 import { ref } from "vue";
 import MyDialog from "@/Components/MyDialog.vue";
 import { useToast } from '@/Components/ui/toast/use-toast';
-import { Toaster } from '@/Components/ui/toast';
+
 
 const { toast } = useToast()
 
@@ -90,7 +90,6 @@ const handleCreateClick = () => {
         <MyDialog v-if="isDialogOpen" :operation="operation" :isDialogOpen="isDialogOpen" @onCreate="createRecord"
             @onEdit="editRecord" @onDialogClose="setDialog" :user="user">
         </MyDialog>
-        <Toaster />
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <h3 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-4">
