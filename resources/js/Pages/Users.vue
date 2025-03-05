@@ -7,7 +7,6 @@ import { ref } from "vue";
 import MyDialog from "@/Components/MyDialog.vue";
 import { useToast } from '@/Components/ui/toast/use-toast';
 
-
 const { toast } = useToast()
 
 let operation = ref("Create");
@@ -27,7 +26,7 @@ function setDialog() {
 }
 
 function createRecord(data) {
-    users.value.push(data);
+    users.value.unshift(data);
 }
 
 function editRecord(data) {

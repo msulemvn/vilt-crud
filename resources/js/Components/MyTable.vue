@@ -2,6 +2,7 @@
 import { defineProps, computed } from "vue";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/Components/ui/table";
 import { Button } from "@/Components/ui/button";
+import { usePage } from "@inertiajs/vue3";
 
 const props = defineProps({
     users: {
@@ -16,6 +17,12 @@ const props = defineProps({
 });
 
 const users = computed(() => props.users);
+const page = usePage();
+const meta = computed(() => page.props.users.meta);
+const currentPage = computed(() => meta.value.current_page);
+const totalPages = computed(() => meta.value.last_page);
+const prevPageUrl = computed(() => meta.value.links.find(link => link.label === "&laquo; Previous")?.url);
+const nextPageUrl = computed(() => meta.value.links.find(link => link.label === "Next &raquo;")?.url);
 </script>
 
 <template>
@@ -44,4 +51,15 @@ const users = computed(() => props.users);
             </TableRow>
         </TableBody>
     </Table>
+    <div class="flex justify-between items-center py-4">
+        <Button variant="outline" :disabled="!prevPageUrl"
+            @click="$inertia.get(prevPageUrl, {}, { preserveScroll: true })">
+            Previous
+        </Button>
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+        <Button variant="outline" :disabled="!nextPageUrl"
+            @click="$inertia.get(nextPageUrl, {}, { preserveScroll: true })">
+            Next
+        </Button>
+    </div>
 </template>

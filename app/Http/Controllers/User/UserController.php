@@ -25,7 +25,7 @@ class UserController extends Controller
      */
     public function index(): Response
     {
-        $users = User::where("id", "!=", Auth::id())->paginate();
+        $users = User::where("id", "!=", Auth::id())->orderBy('id', 'DESC')->paginate(10);
         $users = UserResource::collection($users);
         return Inertia::render("Users", compact("users"));
     }
