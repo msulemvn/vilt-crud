@@ -7,6 +7,7 @@ import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
 import { Toaster } from '@/Components/ui/toast';
+import { Avatar, AvatarImage, AvatarFallback } from '@/Components/ui/avatar';
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -45,9 +46,19 @@ const showingNavigationDropdown = ref(false);
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
-                                            <button type="button"
-                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
-                                                {{ $page.props.auth.user.name }}
+                                            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md 
+           text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 
+           hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none transition ease-in-out duration-150">
+                                                <Avatar class="h-8 w-8">
+                                                    <AvatarImage :src="$page.props.auth.user.picture" alt="User Avatar"
+                                                        class="h-8 w-8 object-cover" loading="eager"
+                                                        @error="imageError = true" />
+                                                    <AvatarFallback v-if="imageError"
+                                                        class="h-8 w-8 text-sm font-semibold">
+                                                        {{ $page.props.auth.user.name.charAt(0) }}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <span class="ml-2 font-semibold">{{ $page.props.auth.user.name }}</span>
 
                                                 <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 20 20" fill="currentColor">
