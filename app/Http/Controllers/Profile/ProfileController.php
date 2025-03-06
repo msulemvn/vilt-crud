@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Str;
 
 class ProfileController extends Controller
 {
@@ -34,6 +35,21 @@ class ProfileController extends Controller
 
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
+        }
+
+        if ($request->hasFile('picture')) {
+
+            if ($request->user()->picture) {
+                unlink(storage_path('/app/public/pictures/' . $request->user()->getRawOriginal('picture')));
+            }
+
+            $file = $request->file('picture');
+            $timestamp = now()->format('YmdHs');
+            $originalFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newFileName = Str::slug($originalFileName) . '-' . $timestamp . '.' . $extension;
+            $file->storeAs('pictures', $newFileName, 'public');
+            $request->user()->picture = $newFileName;
         }
 
         $request->user()->save();
