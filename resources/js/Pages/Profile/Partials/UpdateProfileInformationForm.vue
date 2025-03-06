@@ -4,10 +4,10 @@ import InputLabel from '@/Components/InputLabel.vue';
 import InputFile from '@/Components/MyInputFile.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { Link, router, useForm, usePage } from '@inertiajs/vue3';
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 
 const props = defineProps({
     mustVerifyEmail: Boolean,
@@ -19,7 +19,7 @@ const user = usePage().props.auth.user;
 const form = useForm({
     name: user.name,
     email: user.email,
-    picture: user.picture,
+    picture: user.picture || "/user.svg",
 });
 
 const avatarSrc = computed(() => user.picture || "/user.svg");
@@ -35,10 +35,14 @@ const avatarSrc = computed(() => user.picture || "/user.svg");
             </p>
         </header>
 
-        <form @submit.prevent="form.post(route('profile.update'))" class="mt-6 space-y-6">
+        <form @submit.prevent="form.post(route('profile.update'), {
+            onSuccess: (response) => {
+                user.picture = response.props.auth.user.picture
+            }
+        })" class="mt-6 space-y-6">
             <div>
                 <Avatar class="h-36 w-36 rounded-sm">
-                    <AvatarImage :src="avatarSrc" alt="@unovue" class="object-none" />
+                    <AvatarImage :src="avatarSrc" alt="@unovue" class="object-contain" />
                 </Avatar>
 
                 <InputFile type="file" class="mt-1 block w-full" v-model="form.picture" required autofocus />
