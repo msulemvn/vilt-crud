@@ -25,12 +25,18 @@ const form = useForm({
 });
 
 const imageSrc = computed(() => user.picture || "/user.svg");
+const isLoaded = ref(false);
 const handleFileChange = (file) => {
     if (file && file.size > 0) {
         const reader = new FileReader();
         reader.onload = (event) => {
-            url.value = event.target.result;
-            user.picture = url.value;
+            const img = new Image();
+            img.onload = () => {
+                url.value = event.target.result;
+                user.picture = url.value;
+                isLoaded.value = true;
+            };
+            img.src = event.target.result;
         };
 
         reader.readAsDataURL(file);
@@ -56,7 +62,9 @@ const handleFileChange = (file) => {
         })" class="mt-6 space-y-6">
             <div>
                 <Avatar class="h-36 w-36 rounded-sm">
-                    <AvatarImage :src="imageSrc" alt="avatar" class="object-contain" />
+                    <AvatarImage :src="url || imageSrc" alt="avatar"
+                        class="object-contain transition-opacity duration-300 ease-in-out"
+                        :class="{ 'opacity-0': !isLoaded, 'opacity-100': isLoaded }" @load="isLoaded = true" />
                 </Avatar>
 
                 <InputFile type="file" ref="fileInput" class="mt-1 block w-full" v-model="form.picture"
