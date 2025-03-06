@@ -38,8 +38,7 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('picture')) {
-
-            if ($request->user()->picture) {
+            if ($request->user()->getRawOriginal('picture')) {
                 unlink(storage_path('/app/public/pictures/' . $request->user()->getRawOriginal('picture')));
             }
 

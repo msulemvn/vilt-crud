@@ -4,10 +4,12 @@ import InputLabel from '@/Components/InputLabel.vue';
 import InputFile from '@/Components/MyInputFile.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Link, router, useForm, usePage } from '@inertiajs/vue3';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
-import { computed, onMounted } from 'vue';
+import { Avatar, AvatarImage } from "@/Components/ui/avatar";
+import { computed, ref } from 'vue';
+const fileInput = ref();
+const url = ref();
 
 const props = defineProps({
     mustVerifyEmail: Boolean,
@@ -22,7 +24,18 @@ const form = useForm({
     picture: user.picture || "/user.svg",
 });
 
-const avatarSrc = computed(() => user.picture || "/user.svg");
+const imageSrc = computed(() => user.picture || "/user.svg");
+const handleFileChange = (file) => {
+    if (file && file.size > 0) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            url.value = event.target.result;
+            user.picture = url.value;
+        };
+
+        reader.readAsDataURL(file);
+    }
+};
 </script>
 
 <template>
@@ -37,15 +50,17 @@ const avatarSrc = computed(() => user.picture || "/user.svg");
 
         <form @submit.prevent="form.post(route('profile.update'), {
             onSuccess: (response) => {
-                user.picture = response.props.auth.user.picture
+                user.picture = response.props.auth.user.picture;
+                fileInput.clearInput();
             }
         })" class="mt-6 space-y-6">
             <div>
                 <Avatar class="h-36 w-36 rounded-sm">
-                    <AvatarImage :src="avatarSrc" alt="@unovue" class="object-contain" />
+                    <AvatarImage :src="imageSrc" alt="avatar" class="object-contain" />
                 </Avatar>
 
-                <InputFile type="file" class="mt-1 block w-full" v-model="form.picture" required autofocus />
+                <InputFile type="file" ref="fileInput" class="mt-1 block w-full" v-model="form.picture"
+                    @update:model-value="handleFileChange" required autofocus />
 
                 <InputError class="mt-2" :message="form.errors.picture" />
             </div>
