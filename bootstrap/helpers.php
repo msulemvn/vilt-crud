@@ -59,7 +59,7 @@ if (!function_exists('logActivity')) {
     {
         try {
             ActivityLog::create([
-                'request' => json_encode($request->all(), JSON_UNESCAPED_UNICODE),
+                'request_log_id' => $request["request_log_id"],
                 'description' => $description,
                 'showable' => $showable,
             ]);

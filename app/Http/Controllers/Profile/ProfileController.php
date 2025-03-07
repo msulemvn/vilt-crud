@@ -52,6 +52,7 @@ class ProfileController extends Controller
         }
 
         $request->user()->save();
+        logActivity(request: $request, description: "User updated it's profile", showable: true);
 
         return Redirect::route('profile.edit');
     }
@@ -74,6 +75,7 @@ class ProfileController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        logActivity(request: $request, description: "User deleted it's account", showable: false);
         return Redirect::to('/');
     }
 }

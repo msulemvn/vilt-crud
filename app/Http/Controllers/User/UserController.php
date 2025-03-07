@@ -6,15 +6,14 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Resources\UserResource;
 use Symfony\Component\HttpFoundation\Response as symfonyResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\QueryException;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -41,6 +40,7 @@ class UserController extends Controller
         $userData = ["name" => $request->name, "email" => $request->email, "password" => Hash::make($request->password)];
         $user = User::create($userData);
 
+        logActivity(request: $request, description: "User created a new user", showable: true);
         return apiResponse(message: "User added successfully", data: new UserResource($user), statusCode: symfonyResponse::HTTP_CREATED);
     }
 
@@ -72,6 +72,7 @@ class UserController extends Controller
             $userData = ["name" => $request->name, "email" => $request->email];
             $user->update($userData);
 
+            logActivity(request: $request, description: "User updated a user", showable: true);
             return apiResponse(message: "User updated successfully", data: new UserResource($user));
         } catch (ModelNotFoundException $e) {
             return apiResponse(errors: ["id" => ["No query results for model"]], statusCode: symfonyResponse::HTTP_NOT_FOUND);
@@ -84,12 +85,13 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
         try {
             $user = User::find($id);
             $user->delete();
 
+            logActivity(request: $request, description: "User deleted a user", showable: true);
             return apiResponse(message: "User deleted successfully", statusCode: symfonyResponse::HTTP_NO_CONTENT);
         } catch (ModelNotFoundException $e) {
             return apiResponse(data: ["id" => ["No query results for model"]], statusCode: symfonyResponse::HTTP_NOT_FOUND);
