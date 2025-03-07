@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -7,9 +7,12 @@ import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
 import { Toaster } from '@/Components/ui/toast';
+import { usePage } from "@inertiajs/vue3";
 import { Avatar, AvatarImage, AvatarFallback } from '@/Components/ui/avatar';
 
 const showingNavigationDropdown = ref(false);
+const page = usePage();
+const imageSrc = computed(() => page.props.auth.user.picture || "/user.svg");
 </script>
 
 <template>
@@ -50,8 +53,8 @@ const showingNavigationDropdown = ref(false);
            text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 
            hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none transition ease-in-out duration-150">
                                                 <Avatar class="h-8 w-8">
-                                                    <AvatarImage :src="$page.props.auth.user.picture" alt="User Avatar"
-                                                        class="h-8 w-8 object-cover" loading="eager"
+                                                    <AvatarImage :src="imageSrc" alt="User Avatar"
+                                                        class="h-8 w-8 object-fit" loading="eager"
                                                         @error="imageError = true" />
                                                     <AvatarFallback v-if="imageError"
                                                         class="h-8 w-8 text-sm font-semibold">
