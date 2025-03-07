@@ -38,17 +38,6 @@ const handleFileChange = (file) => {
     }
 };
 
-async function urlToBase64(imageUrl) {
-    const response = await fetch(imageUrl);
-    const blob = await response.blob();
-
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-    });
-}
 </script>
 
 <template>
@@ -64,18 +53,10 @@ async function urlToBase64(imageUrl) {
         <form @submit.prevent="form.post(route('profile.update'), {
             onSuccess: (response) => {
                 const updatedUrl = response.props.auth.user.picture;
-                urlToBase64(updatedUrl)
-                    .then(base64 => {
-
-                        if (base64 != localImg) {
-                            user.picture = updatedUrl;
-                            localImg = null;
-                        }
-                    })
-                    .catch(error => console.error(error))
-                    .finally(() => {
-                        fileInput.clearInput();
-                    });
+                if (updatedUrl == user.picture) {
+                    localImg = null;
+                }
+                fileInput.clearInput();
             }
         })" class="mt-6 space-y-6">
             <div>
