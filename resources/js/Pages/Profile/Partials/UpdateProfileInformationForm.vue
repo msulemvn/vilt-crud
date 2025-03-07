@@ -9,7 +9,7 @@ import { Link, useForm, usePage } from '@inertiajs/vue3';
 import { Avatar, AvatarImage } from "@/Components/ui/avatar";
 import { computed, ref } from 'vue';
 const fileInput = ref();
-const url = ref();
+const localImg = ref(null);
 
 const props = defineProps({
     mustVerifyEmail: Boolean,
@@ -21,27 +21,34 @@ const user = usePage().props.auth.user;
 const form = useForm({
     name: user.name,
     email: user.email,
-    picture: user.picture || "/user.svg",
+    picture: user.picture,
 });
 
 const imageSrc = computed(() => user.picture || "/user.svg");
-const isLoaded = ref(false);
 const handleFileChange = (file) => {
     if (file && file.size > 0) {
         const reader = new FileReader();
         reader.onload = (event) => {
-            const img = new Image();
-            img.onload = () => {
-                url.value = event.target.result;
-                user.picture = url.value;
-                isLoaded.value = true;
-            };
-            img.src = event.target.result;
+            setTimeout(() => {
+                localImg.value = event.target.result;
+            }, 300);
         };
 
         reader.readAsDataURL(file);
     }
 };
+
+async function urlToBase64(imageUrl) {
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
 </script>
 
 <template>
@@ -56,15 +63,24 @@ const handleFileChange = (file) => {
 
         <form @submit.prevent="form.post(route('profile.update'), {
             onSuccess: (response) => {
-                user.picture = response.props.auth.user.picture;
-                fileInput.clearInput();
+                const updatedUrl = response.props.auth.user.picture;
+                urlToBase64(updatedUrl)
+                    .then(base64 => {
+
+                        if (base64 != localImg) {
+                            user.picture = updatedUrl;
+                            localImg = null;
+                        }
+                    })
+                    .catch(error => console.error(error))
+                    .finally(() => {
+                        fileInput.clearInput();
+                    });
             }
         })" class="mt-6 space-y-6">
             <div>
                 <Avatar class="h-36 w-36 rounded-sm">
-                    <AvatarImage :src="url || imageSrc" alt="avatar"
-                        class="object-contain transition-opacity duration-300 ease-in-out"
-                        :class="{ 'opacity-0': !isLoaded, 'opacity-100': isLoaded }" @load="isLoaded = true" />
+                    <AvatarImage :src="localImg || imageSrc" alt="avatar" class="object-contain" />
                 </Avatar>
 
                 <InputFile type="file" ref="fileInput" class="mt-1 block w-full" v-model="form.picture"

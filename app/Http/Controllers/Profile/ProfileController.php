@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
 class ProfileController extends Controller
 {
@@ -38,7 +39,7 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('picture')) {
-            if ($request->user()->getRawOriginal('picture')) {
+            if (File::exists(storage_path('/app/public/pictures/' . $request->user()->getRawOriginal('picture')))) {
                 unlink(storage_path('/app/public/pictures/' . $request->user()->getRawOriginal('picture')));
             }
 
