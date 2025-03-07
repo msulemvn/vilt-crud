@@ -56,10 +56,12 @@ const deleteRecord = (data) => {
         }
     }).catch((error) => {
         const myErrors = error.response.data.errors;
+        const validationErrors = myErrors['validation'];
         const errorKey = Object.keys(myErrors)[0];
         const errors = myErrors[errorKey];
-
-        if (errors) {
+        if (validationErrors) {
+            form.setErrors(errors);
+        } else {
             Object.entries(errors).forEach(([key, messages]) => {
                 toast({
                     title: key,
