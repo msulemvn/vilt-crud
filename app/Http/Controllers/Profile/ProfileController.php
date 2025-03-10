@@ -13,9 +13,16 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+use App\Services\User\PictureService;
 
 class ProfileController extends Controller
 {
+    protected $pictureService;
+    public function __construct(PictureService $pictureService)
+    {
+        $this->pictureService = $pictureService;
+    }
+
     /**
      * Display the user's profile form.
      */
@@ -39,16 +46,10 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('picture')) {
-            if (File::exists(storage_path('/app/public/pictures/' . $request->user()->getRawOriginal('picture')))) {
-                unlink(storage_path('/app/public/pictures/' . $request->user()->getRawOriginal('picture')));
-            }
-
-            $file = $request->file('picture');
-            $timestamp = now()->format('YmdHs');
-            $originalFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $extension = $file->getClientOriginalExtension();
-            $newFileName = Str::slug($originalFileName) . '-' . $timestamp . '.' . $extension;
-            $file->storeAs('pictures', $newFileName, 'public');
+            $newFileName = $this->pictureService->upload(
+                $request->file('picture'),
+                $request->user()->getRawOriginal('picture')
+            );
             $request->user()->picture = $newFileName;
         }
 
