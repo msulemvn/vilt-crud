@@ -78,19 +78,21 @@ const onSubmit = form.handleSubmit(async (values) => {
             });
         })
         .catch((error) => {
-            const myErrors = error.response.data.errors;
-            const validationErrors = myErrors['validation'];
-            const errorKey = Object.keys(myErrors)[0];
-            const errors = myErrors[errorKey];
-            if (validationErrors) {
-                form.setErrors(errors);
-            } else {
-                Object.entries(errors).forEach(([key, messages]) => {
-                    toast({
-                        title: key,
-                        description: messages[0]
+            const errors = error.response.data.errors;
+            if (errors && 'validation' in errors) {
+                const validationErrors = errors['validation'];
+                const firstErrorKey = Object.keys(errors)[0];
+                const firstErrorMessages = errors[firstErrorKey];
+                if (validationErrors) {
+                    form.setErrors(firstErrorMessages);
+                } else {
+                    Object.entries(firstErrorMessages).forEach(([field, messages]) => {
+                        toast({
+                            title: field,
+                            description: messages[0]
+                        });
                     });
-                });
+                }
             }
         })
 });

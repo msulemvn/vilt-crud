@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Http\Resources\UserResource;
 use Symfony\Component\HttpFoundation\Response as symfonyResponse;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use Illuminate\Http\Request;
+use App\DTOs\User\StoreUserDTO;
 
 class UserController extends Controller
 {
@@ -37,8 +37,8 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        $userData = ["name" => $request->name, "email" => $request->email, "password" => Hash::make($request->password)];
-        $user = User::create($userData);
+        $userDTO = new StoreUserDTO($request->validated());
+        $user = User::create($userDTO->toArray());
 
         logActivity(request: $request, description: "User created a new user", showable: true);
         return apiResponse(message: "User added successfully", data: new UserResource($user), statusCode: symfonyResponse::HTTP_CREATED);
@@ -69,8 +69,8 @@ class UserController extends Controller
         try {
 
             $user = User::findOrFail($id);
-            $userData = ["name" => $request->name, "email" => $request->email];
-            $user->update($userData);
+            $user->fill($request->validated());
+            $user->save();
 
             logActivity(request: $request, description: "User updated a user", showable: true);
             return apiResponse(message: "User updated successfully", data: new UserResource($user));

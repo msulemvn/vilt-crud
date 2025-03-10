@@ -1,17 +1,17 @@
 <?php
 
-namespace App\DTOs\HttpRequest;
+namespace App\DTOs\RequestLog;
 
 use App\DTOs\BaseDTO;
 
-class HttpRequestDTO extends BaseDTO
+class StoreRequestLogDTO extends BaseDTO
 {
-    public $session_id;
-    public $ip;
-    public $method;
-    public $url;
-    public $payload;
-    public $headers;
+    public string $session_id;
+    public string $ip;
+    public string $method;
+    public string $url;
+    public string $payload;
+    public string $headers;
 
     public function __construct($request)
     {

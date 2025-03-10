@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('http_requests', function (Blueprint $table) {
+        Schema::create('request_logs', function (Blueprint $table) {
             $table->id();
             $table->string('session_id')->index();
             $table->unsignedBigInteger('user_id')->nullable();
@@ -36,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('http_requests');
+        Schema::dropIfExists('request_logs');
     }
 };

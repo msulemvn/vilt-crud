@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('request_log_id');
-            $table->foreign('request_log_id')->references('id')->on('http_requests');
+            $table->foreign('request_log_id')->references('id')->on('request_logs');
             $table->string('description');
             $table->boolean('showable')->default(false);
             $table->timestamps();

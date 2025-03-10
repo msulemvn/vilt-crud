@@ -3,11 +3,10 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use \App\Models\HttpRequest;
+use \App\Models\RequestLog;
 use Illuminate\Http\Request;
-use \App\DTOs\HttpRequest\HttpRequestDTO;
+use \App\DTOs\RequestLog\StoreRequestLogDTO;
 use Symfony\Component\HttpFoundation\Response;
-use bootstrap\Helpers;
 
 class HttpLogger
 {
@@ -21,7 +20,7 @@ class HttpLogger
     public function handle(Request $request, Closure $next): Response
     {
         try {
-            $httpRequest = HttpRequest::create((new HttpRequestDTO($request))->toArray());
+            $httpRequest = RequestLog::create((new StoreRequestLogDTO($request))->toArray());
             $request['request_log_id'] = $httpRequest->id;
         } catch (\Exception $e) {
             apiResponse(request: $request, exception: $e);
@@ -39,7 +38,7 @@ class HttpLogger
      */
     public function terminate(Request $request, Response $response): void
     {
-        $httpRequest = HttpRequest::find($request['request_log_id'] ?? null);
+        $httpRequest = RequestLog::find($request['request_log_id'] ?? null);
         if ($httpRequest) {
             $httpRequest->update([
                 'user_id' => $request->user()->id ?? null,
