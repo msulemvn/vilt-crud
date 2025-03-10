@@ -15,10 +15,7 @@ return new class extends Migration
     {
         Schema::create('error_logs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('request_log_id')->nullable();
-            $table->foreign('request_log_id')->references('id')->on('request_logs');
             $table->string('line_number');
-            $table->string('function');
             $table->string('file');
             $table->longText('exception_message')->nullable();
             $table->longText('trace')->nullable();

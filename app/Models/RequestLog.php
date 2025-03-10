@@ -19,11 +19,6 @@ class RequestLog extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function error_log()
-    {
-        return $this->hasOne(ErrorLog::class);
-    }
-
     public function activity_log()
     {
         return $this->hasOne(ActivityLog::class);

@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use App\Models\ErrorLog;
 use App\Models\ActivityLog;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\DTOs\ErrorLog\StoreErrorLogDTO;
+use App\DTOs\ActivityLog\StoreActivityLogDTO;
 
 if (!function_exists('apiResponse')) {
     function apiResponse(
@@ -18,22 +20,6 @@ if (!function_exists('apiResponse')) {
         ?Throwable $exception = null
     ): JsonResponse {
         $result = [];
-        if ($exception && $request) {
-            try {
-                ErrorLog::create([
-                    'request' => json_encode($request->all(), JSON_UNESCAPED_UNICODE),
-                    'exception' => $exception->getMessage(),
-                    'function' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'] ?? 'unknown',
-                ]);
-                Log::error('Error Log:', ['exception' => $exception]);
-            } catch (Throwable $e) {
-                Log::critical('Error logging failed', ['exception' => $e]);
-            }
-
-            $message = $message ?? 'Something went wrong';
-            $errors = ['server' => ['An error occurred']];
-        }
-
         if ($statusCode) {
             $result['status'] = SymfonyResponse::$statusTexts[$statusCode];
         }
@@ -50,6 +36,16 @@ if (!function_exists('apiResponse')) {
             $result['errors'] = ['validation' => $errors];
         }
 
+        if ($exception && $request) {
+            try {
+                ErrorLog::create((new StoreErrorLogDTO($request, $exception))->toArray());
+                Log::error('Error Log:', ['exception' => $exception]);
+            } catch (Throwable $e) {
+                Log::critical('Error logging failed', ['exception' => $e]);
+            }
+
+            return response()->json($result, $statusCode);
+        }
         return response()->json($result, $statusCode);
     }
 }
@@ -58,11 +54,11 @@ if (!function_exists('logActivity')) {
     function logActivity(Request $request, string $description, bool $showable = false): void
     {
         try {
-            ActivityLog::create([
-                'request_log_id' => $request["request_log_id"],
-                'description' => $description,
-                'showable' => $showable,
-            ]);
+            ActivityLog::create((new StoreActivityLogDTO(
+                $request["request_log_id"],
+                $description,
+                $showable,
+            ))->toArray());
         } catch (Throwable $e) {
             Log::warning('Activity logging failed', ['exception' => $e]);
         }

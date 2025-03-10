@@ -41,7 +41,7 @@ class UserController extends Controller
         $user = User::create($userDTO->toArray());
 
         logActivity(request: $request, description: "User created a new user", showable: true);
-        return apiResponse(message: "User added successfully", data: new UserResource($user), statusCode: symfonyResponse::HTTP_CREATED);
+        return apiResponse(message: "User added successfully", data: UserResource::make($user), statusCode: symfonyResponse::HTTP_CREATED);
     }
 
     /**
@@ -73,7 +73,7 @@ class UserController extends Controller
             $user->save();
 
             logActivity(request: $request, description: "User updated a user", showable: true);
-            return apiResponse(message: "User updated successfully", data: new UserResource($user));
+            return apiResponse(message: "User updated successfully", data: UserResource::make($user));
         } catch (ModelNotFoundException $e) {
             return apiResponse(errors: ["id" => ["No query results for model"]], statusCode: symfonyResponse::HTTP_NOT_FOUND);
         }
