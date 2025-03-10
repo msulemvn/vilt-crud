@@ -2,11 +2,11 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import { Button } from "@/Components/ui/button";
-import MyTable from "@/Components/MyTable.vue";
+import Table from "@/Components/Table.vue";
 import { ref } from "vue";
-import MyDialog from "@/Components/MyDialog.vue";
+import Dialog from "@/Components/Dialog.vue";
 import { useToast } from '@/Components/ui/toast/use-toast';
-import MyPagination from "@/Components/MyPagination.vue";
+import Pagination from "@/Components/Pagination.vue";
 import {
     Card,
     CardContent,
@@ -95,9 +95,9 @@ const handleCreateClick = () => {
                 Users
             </h2>
         </template>
-        <MyDialog v-if="isDialogOpen" :operation="operation" :isDialogOpen="isDialogOpen" @onCreate="createRecord"
+        <Dialog v-if="isDialogOpen" :operation="operation" :isDialogOpen="isDialogOpen" @onCreate="createRecord"
             @onEdit="editRecord" @onDialogClose="setDialog" :user="user">
-        </MyDialog>
+        </Dialog>
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <h3 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-4">
@@ -112,10 +112,10 @@ const handleCreateClick = () => {
                         </div>
                     </CardTitle>
                     <CardContent class="max-h-[60vh]">
-                        <MyTable :data="users.data" :actions="[handleEditClick, deleteRecord]" />
+                        <Table :data="users.data" :actions="[handleEditClick, deleteRecord]" />
                     </CardContent>
                     <CardFooter class="flex justify-center p-4">
-                        <MyPagination :meta="users.meta"></MyPagination>
+                        <Pagination :meta="users.meta"></Pagination>
                     </CardFooter>
                 </Card>
             </div>
