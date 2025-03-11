@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Throwable;
+use Illuminate\Validation\ValidationException;
 
 class Handler extends ExceptionHandler
 {
@@ -51,6 +52,15 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $e)
     {
-        return apiResponse(message: 'Something went wrong', statusCode: symfonyResponse::HTTP_INTERNAL_SERVER_ERROR, request: $request, exception: $e);
+        if ($e instanceof ValidationException) {
+            return parent::render($request, $e);
+        }
+
+        return apiResponse(
+            message: 'Something went wrong',
+            statusCode: SymfonyResponse::HTTP_INTERNAL_SERVER_ERROR,
+            request: $request,
+            exception: $e
+        );
     }
 }
