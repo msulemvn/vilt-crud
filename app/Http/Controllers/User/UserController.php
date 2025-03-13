@@ -89,6 +89,9 @@ class UserController extends Controller
     {
         try {
             $user = User::find($id);
+            if (!$user) {
+                return apiResponse(errors: ["id" => ["User not found"]], statusCode: symfonyResponse::HTTP_NOT_FOUND);
+            }
             $user->delete();
 
             logActivity(request: $request, description: "User deleted a user", showable: true);
